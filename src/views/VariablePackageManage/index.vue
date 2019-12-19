@@ -142,7 +142,7 @@
         </el-col>
         <el-col :span="20" style="padding:10px;box-sizing:border-box;">
           <el-row style="font-size:12px;">
-            <el-col :span="5">
+            <el-col :span="7">
               规则包名称：{{ editPackage.packageName }}
             </el-col>
             <el-col :span="7">
@@ -151,7 +151,6 @@
           </el-row>
           <el-row style="margin-top: 3vh;">
             <el-button type="primary" size="mini" @click="updatePackage">保存</el-button>
-            <el-button type="primary" size="mini" style="float:right">选取规则模板</el-button>
           </el-row>
           <el-row style="margin-top:3vh">
             <el-collapse v-for="(rule, ruleIndex) in editPackage" :key="`rule-${ruleIndex}`" v-model="activeNames[ruleIndex]">
@@ -813,7 +812,7 @@ export default {
       this.editCurrentVersion = this.packageList[index].packageVersion
 
       this.isShowEditDialog = true
-
+      //  处理了数据请求以后返回先后顺序不一致问题
       Promise.all([getAllPackageVersion(this.getVersionQueryOption(index)), getPackageEditData(this.getEditOption(index)), getPackageEditVariables()])
         .then(resArr => {
           console.log('line 617', resArr[1])

@@ -211,7 +211,7 @@ export default {
       isShowTable: false,
       // 分页配置
       pagination: {
-        pageSize: 3,
+        pageSize: 5,
         pageNumber: 1,
         total: 0
       },
