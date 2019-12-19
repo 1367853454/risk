@@ -557,6 +557,7 @@ export default {
         resultCompareValue: [],
         ruleId: -1,
         ruleName: '',
+        ruleDescribe: '',
         ruleTips: '',
         status: 'unpublished',
         variableNames: []
@@ -1038,6 +1039,10 @@ export default {
     validateRuleAddOption() {
       if (this.ruleAdd.ruleName === '') {
         this.$message.error('规则名不能为空')
+        return false
+      }
+      if (this.ruleAdd.ruleDescribe === '') {
+        this.$message.error('规则描述不能为空')
         return false
       }
       return true
