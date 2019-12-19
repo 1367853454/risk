@@ -132,6 +132,7 @@
         <el-col v-show="editVersionList.length === 0" :span="4">
           未查询到版本号
         </el-col>
+        <!--左侧版本栏-->
         <el-col :span="4">
           <el-menu :default-active="editCurrentVersion" class="el-menu-vertical-demo">
             <el-menu-item v-for="(version, index) in editVersionList" :key="`version-${index}`" :index="version.packageVersion" :value="version" @click="requestPackage(version.packageVersion)">
@@ -163,7 +164,7 @@
                       <el-col :span="4">{{ rule.ruleDescribe }}</el-col>
                       <el-col :span="6" :offset="10" style="postition:relative;">
                         <el-col :span="8" style="height:50px;" @click.stop="handleSwitchChange">
-                          <switcher :status="rule.status" :rule-id="rule.ruleId" style="margin-top:15px;" @statechange="handleStateChange" />
+                          <switcher :status="rule.status" :rule-id="rule.ruleId" style="margin-top:15px;"/>
                         </el-col>
                         <el-col :span="8">
                           <span class="text-link" @click="handleRuleEdit(ruleIndex)">编辑</span>
@@ -542,6 +543,7 @@ export default {
         { key: '3', value: 'biz' }
       ],
       radioData: '',
+      deleteCurrentPackageVersion: '',
       activeNames: [],
       editPackage: {},
       editResultValueList: [],
@@ -597,6 +599,7 @@ export default {
       }
     },
     requestPackage(version) {
+      this.deleteCurrentPackageVersion = version
       this.isAddRule = false
       this.ruleAdd = {
         conditionCompare: [],
@@ -607,6 +610,7 @@ export default {
         resultCompareValue: [],
         ruleId: -1,
         ruleName: '',
+        ruleDescribe: '',
         ruleTips: '',
         status: 'unpublished',
         variableNames: []
@@ -679,9 +683,9 @@ export default {
           this.$message.error('请求发送失败')
         })
     },
-    // 更新规则包信息
+    // 更新规则包信息 todo 把前面显示的新增编辑--直接把现有的列表保存起来
     updatePackage() {
-      console.log('line 661', this.getPackageUpdateOption())
+      console.log('updatePackage()', this.getPackageUpdateOption())
       postPackageUpdate(this.getPackageUpdateOption())
         .then(({ data }) => {
           if (data.status === 'success') {
@@ -1006,6 +1010,7 @@ export default {
         }
         this.isAddRule = false
         this.editPackageTemp = this.deepClone(this.editPackage)
+        console.log('save add', this.editPackageTemp)
         this.$message({ type: 'success', message: '规则添加成功' })
       }
     },
@@ -1053,6 +1058,7 @@ export default {
           console.log(this.editPackage[ruleIndex].ruleId)
           postDeleteRule({ ruleId: this.editPackage[ruleIndex].ruleId })
             .then(({ data }) => {
+              this.requestPackage(this.deleteCurrentPackageVersion)
               console.log(data)
             })
             .catch(err => {
@@ -1065,12 +1071,6 @@ export default {
           this.$message('取消删除')
         })
       console.log(this.editPackage[ruleIndex])
-    },
-    // 处理switch开关状态转换事件
-    // 规则的禁用与开启
-    handleStateChange(state) {
-      getPackageEditData({ packageCode: 'REJECT_PACKAGE', version: '1.0.2' })
-        .then(({ data }) => console.log(data))
     },
     /**
      * 发布规则包
