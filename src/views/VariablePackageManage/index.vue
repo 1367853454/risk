@@ -813,6 +813,7 @@ export default {
         })
     },
     handleEdit(index) {
+      this.isAddRule = false;
       this.activePackageIndex = index
       this.editCurrentVersion = this.packageList[index].packageVersion
 
