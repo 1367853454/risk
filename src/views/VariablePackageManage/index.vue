@@ -741,6 +741,7 @@ export default {
       this.isShowAdd = true
       this.isShowRelease = false
       this.open({ title: '添加规则包', isDisabled: false })
+      this.clearObj(this.packageAdd)
     },
     handlePageChange(current) {
       this.pagination.pageNumber = current
@@ -1217,6 +1218,12 @@ export default {
     },
     deepClone(obj) {
       return JSON.parse(JSON.stringify(obj))
+    },
+    clearObj(obj) {
+      const o = obj
+      for (const key of Object.keys(o)) {
+        o[key] = ''
+      }
     }
   }
 }

@@ -93,10 +93,10 @@
           <span class="required" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名称: <el-input v-model="processAdd.processName" placeholder="请输入" style="width: 70%" />
         </p>
         <p>
-          <span class="required" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;流程代码: <el-input v-model="processAdd.processCode" placeholder="请输入" style="width: 70%" />
+          <span class="required" />流程代码:<el-input v-model="processAdd.processCode" placeholder="请输入" style="width: 70%" />
         </p>
         <p>
-          <span class="required" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;触发环节:
+          <span class="required" />触发环节:
           <el-select v-model="processAdd.triggerLinkKey">
             <el-option v-for="(triggerLink, index) in allTriggerLink" :key="index" :value="triggerLink.key">{{ triggerLink.key }}</el-option>
           </el-select>
@@ -183,7 +183,7 @@ export default {
           processDescribe: 'desc',
           triggerLink: 'trigger',
           updateTime: '2019.07.18'
-        },
+        }
       ],
       isShowTable: false,
       isShowAdddialog: false,
@@ -253,7 +253,7 @@ export default {
             return
           }
           this.isLoading = false
-          this.$message.error('查询失败')
+          this.$message.error('查询失败，请输入查询条件')
         })
         .catch(err => {
           this.isLoading = false
@@ -293,6 +293,7 @@ export default {
     // 显示添加规则流程界面
     handleAdd() {
       this.isShowAdddialog = true
+      this.clearObj(this.processAdd)
     },
     // 添加规则流程
     addProcess() {
