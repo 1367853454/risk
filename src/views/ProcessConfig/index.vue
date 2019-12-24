@@ -10,9 +10,6 @@
         <el-form-item label="规则包代码：" style="width: 33%">
           <el-input v-model="input_packageCode" placeholder="请输入" />
         </el-form-item>
-        <!-- <el-form-item label="规则包名称：" style="width: 28%">
-          <el-input v-model="input_packageName" placeholder="请输入" />
-        </el-form-item> -->
         <el-form-item label="业务：" style="width: 33%">
           <el-select v-model="input_businessCode">
             <el-option v-for="biz in bizList" :key="biz.key" :label="biz.value" :value="biz.key" />
@@ -229,6 +226,7 @@ export default {
             this.processPackageList = data.content
             this.oldList = this.processPackageList.map(pack => pack.packageId)
             this.newList = this.oldList.slice()
+            // 异步更新排序
             this.$nextTick(() => {
               this.setSort()
             })
@@ -263,6 +261,7 @@ export default {
           // to avoid Firefox bug
           // Detail see : https://github.com/RubaXa/Sortable/issues/1012
           dataTransfer.setData('Text', '')
+          console.log('text')
         },
         onEnd: evt => {
           const targetRow = this.processPackageList.splice(evt.oldIndex, 1)[0]

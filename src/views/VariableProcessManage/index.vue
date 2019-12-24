@@ -71,7 +71,7 @@
               <el-col :span="6"><div class="grid-content"><el-button class="mini-btn bg-blue" size="mini" @click="handleEdit(scope.$index)">编辑</el-button></div></el-col>
               <el-col :span="6"><div v-show="scope.row.publishStatus === 'unpublished'" class="grid-content"><el-button class="mini-btn bg-green" size="mini" @click="handleRelease(scope.$index)">发布</el-button></div></el-col>
               <el-col :span="6"><div v-show="scope.row.publishStatus === 'published'" class="grid-content"><el-button class="mini-btn bg-orange" size="mini" @click="handleOffLine(scope.$index)">下线</el-button></div></el-col>
-              <el-col :span="6"><div v-show="scope.row.publishStatus === 'published'" class="grid-content"><el-button class="mini-btn bg-yellow" size="mini" @click="jumpConfig(scope.$index)">规则管理</el-button></div></el-col>
+              <el-col :span="6"><div class="grid-content"><el-button class="mini-btn bg-yellow" size="mini" @click="jumpConfig(scope.$index)">规则管理</el-button></div></el-col>
             </el-row>
           </template>
         </el-table-column>
