@@ -118,8 +118,8 @@ export default {
         endDate = ''
         // args = { startDate: '', endDate: '', dataType: this.dataType }
       } else {
-        startDate = this.orderTime[0]
-        endDate = this.orderTime[1]
+        startDate = this.orderTime[0] || ''
+        endDate = this.orderTime[1] || ''
         // args = { startDate: this.orderTime[0] || '', endDate: this.orderTime[1] || '', dataType: this.dataType,  }
       }
       const args = { pageSize, pageNumber, dataType, startDate, endDate }
