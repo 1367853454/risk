@@ -211,7 +211,7 @@ function postProcessOfflinee(option, timeout = defaltTimeout) {
 
 // 规则流程发布
 function postProcessRelease(option, timeout = defaltTimeout) {
-  return request('POST', `${host}/risk/api/admin/process/release`)
+  return request('POST', `${host}/risk/api/admin/process/release`, option, timeout)
 }
 
 // 规则包管理查看

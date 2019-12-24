@@ -69,8 +69,8 @@
             <el-row>
               <el-col :span="6"><div class="grid-content"><el-button class="mini-btn bg-red" size="mini" @click="handleDelete(scope.$index)">删除</el-button></div></el-col>
               <el-col :span="6"><div class="grid-content"><el-button class="mini-btn bg-blue" size="mini" @click="handleEdit(scope.$index)">编辑</el-button></div></el-col>
-              <!-- <el-col :span="6"><div class="grid-content"><el-button class="mini-btn bg-yellow" size="mini" @click="handleTest(scope.$index)">测试</el-button></div></el-col> -->
-              <el-col :span="6"><div class="grid-content"><el-button class="mini-btn bg-green" size="mini" @click="handleStatuChange(scope.$index)">发布</el-button></div></el-col>
+              <el-col :span="6"><div v-show="scope.row.publishStatus === 'unpublished'" class="grid-content"><el-button class="mini-btn bg-green" size="mini" @click="handleRelease(scope.$index)">发布</el-button></div></el-col>
+              <el-col :span="6"><div v-show="scope.row.publishStatus === 'published'" class="grid-content"><el-button class="mini-btn bg-orange" size="mini" @click="handleOffLine(scope.$index)">下线</el-button></div></el-col>
               <el-col :span="6"><div class="grid-content"><el-button class="mini-btn bg-yellow" size="mini" @click="jumpConfig(scope.$index)">规则管理</el-button></div></el-col>
             </el-row>
           </template>
@@ -152,10 +152,10 @@ const {
   getTriggerLinkQery,
   // postProcessManage,
   // getPacakgeSearch,
-  postProcessEdit
+  postProcessEdit,
   // getProcessInfo
-  // postProcessOfflinee
-  // postProcessRelease
+  postProcessOfflinee,
+  postProcessRelease
 } = api
 export default {
   data() {
@@ -355,7 +355,34 @@ export default {
       console.log(index, 'test')
     },
     handleRelease(index) {
-      console.log(index, 'release')
+      postProcessRelease(this.getStateChangeOption(index))
+        .then(({ data }) => {
+          if (data.status === 'success') {
+            this.$message({ type: 'success', message: '发布成功' })
+            this.requestProcessList()
+            return
+          }
+          this.$message.error(`发布失败-${data.message}`)
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('请求出错')
+        })
+    },
+    handleOffLine(index) {
+      postProcessOfflinee(this.getStateChangeOption(index))
+        .then(({ data }) => {
+          if (data.status === 'success') {
+            this.$message({ type: 'success', message: '下线成功' })
+            this.requestProcessList()
+            return
+          }
+          this.$message.error(`下线失败-${data.message}`)
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('请求出错')
+        })
     },
     // 处理分页跳转
     handlePageChange(index) {
@@ -386,6 +413,11 @@ export default {
       }
       option['pageSize'] = this.pagination.pageSize
       option['pageNumber'] = this.pagination.pageNumber
+      return option
+    },
+    getStateChangeOption(index) {
+      const option = {}
+      option['processId'] = this.processList[index].processId
       return option
     },
     getDeleteOption(index) {
@@ -462,6 +494,10 @@ export default {
       .bg-green {
         color: #fff;
         background: rgb(102, 204, 102);
+      }
+      .bg-orange {
+        color: #fff;
+        background: rgb(255, 97, 0);
       }
     }
     .pagination {
