@@ -58,7 +58,6 @@
     <el-row style="padding: 10px;font-size: 25px;color:#666">
       规则流程
     </el-row>
-    </el-table>
     <el-table ref="dragTable" v-loading="isLoading" :data="processPackageList" row-key="packageId" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="规则包ID" width="120px">
         <template slot-scope="scope">
@@ -93,10 +92,8 @@
 </template>
 
 <script>
-// import { fetchList } from '@/api/article'
 import Sortable from 'sortablejs'
-import api from '@/api'
-// import deepClone from '@/utils/index'
+import api from '../../api/index.js'
 
 const {
   getType,
