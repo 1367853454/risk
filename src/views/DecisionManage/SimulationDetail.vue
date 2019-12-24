@@ -8,7 +8,7 @@
       <el-table-column label="名称" prop="processName" />
       <el-table-column label="描述" prop="processDescribe" />
       <!--      <el-table-column label="当前版本" />-->
-      <el-table-column label="修改时间" prop="upDateTime" />
+      <el-table-column label="修改时间" prop="updateTime" />
     </el-table>
     <el-row type="flex" align="middle" style="padding: 15px 0; margin-top: 50px;">
       <el-col :span="6">数据类型
@@ -31,7 +31,6 @@
           end-placeholder="结束日期"
           value-format="yyyy-MM-dd"
           format="yyyy-MM-dd"
-          @change="handleValidateDate"
         />
       </el-col>
       <el-col :span="2">最多展示一周数据</el-col>
@@ -70,7 +69,11 @@
 
 <script>
 import api from '../../api/decision'
-const { getRuleProcess, getDataType, getOrderList } = api
+const {
+  getRuleProcess,
+  getDataType,
+  getOrderList
+} = api
 export default {
   name: 'SimulationDetail',
   data() {
@@ -82,7 +85,7 @@ export default {
       // 数据类型
       input_dataType: '',
       input_orderTiem: [],
-      dataType: 'PASS',
+      dataType: '',
       dataTypeList: [],
       // 订单创建时间
       orderTime: [],
@@ -115,21 +118,21 @@ export default {
         endDate = ''
         // args = { startDate: '', endDate: '', dataType: this.dataType }
       } else {
-        startDate = this.orderTime[0] || ''
-        endDate = this.orderTime[1] || ''
+        startDate = this.orderTime[0]
+        endDate = this.orderTime[1]
         // args = { startDate: this.orderTime[0] || '', endDate: this.orderTime[1] || '', dataType: this.dataType,  }
       }
       const args = { pageSize, pageNumber, dataType, startDate, endDate }
       this.lendTableLoading = true
       getOrderList(args).then(({ data }) => {
-        // console.log('lemdData', data)
+        console.log('lemdData', data)
         this.lendData = data.content.rows
         this.total = data.content.records
         this.lendTableLoading = false
         this.$refs.lendTable.toggleAllSelection(false)
       })
     },
-    handleSearch(){
+    handleSearch() {
       this.dataType = this.input_dataType
       if (!this.input_orderTime || this.input_orderTime.length === 0) {
         this.orderTime = []
@@ -191,24 +194,25 @@ export default {
       this.currentPage = currentPage
       this.reqOrderList()
     },
-    handleValidateDate() {
-      console.log(this.orderTime)
-      if (!this.orderTime) {
-        return
-      }
-      const [start, end] = this.orderTime.map(time => new Date(time))
-      const _7_DAY = 7 * 24 * 60 * 60 * 1000
-      const now = new Date()
-      console.log(now-end)
-      if (now - end > _7_DAY) {
-        // this.orderTime[1] = now - _7_DAY
-        this.$message('最多显示7天数据')
-      }
-      if (now - start > _7_DAY) {
-        // this.orderTime[0] = now - _7_DAY
-        this.$message('最多显示7天数据')
-      }
-    },
+    // handleValidateDate() {
+    //   console.log(this.orderTime)
+    //   if (!this.orderTime) {
+    //     return
+    //   }
+    //   const [start, end] = this.orderTime.map(time => new Date(time))
+    //   const _7_DAY = 7 * 24 * 60 * 60 * 1000
+    //   const now = new Date()
+    //   console.log(now)
+    //   console.log(now - end)
+    //   if (now - end > _7_DAY) {
+    //     // this.orderTime[1] = now - _7_DAY
+    //     this.$message('最多显示7天数据')
+    //   }
+    //   if (now - start > _7_DAY) {
+    //     // this.orderTime[0] = now - _7_DAY
+    //     this.$message('最多显示7天数据')
+    //   }
+    // },
     handleSelectionChange(selection) {
       selection.forEach(row => {
         if (this.orderCodeSet.has(row.orderCode)) {

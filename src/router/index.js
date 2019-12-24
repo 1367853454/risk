@@ -113,7 +113,7 @@ export const asyncRoutes = [
     name: 'RuleManage',
     meta: {
       title: '规则管理',
-      icon: 'lock'
+      icon: 'star'
       // roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [

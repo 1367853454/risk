@@ -48,7 +48,10 @@
 
 <script>
 import api from '../../api/decision.js'
-const { getSimulationList, getWorkParams } = api
+const {
+  getSimulationList,
+  getWorkParams
+} = api
 export default {
   name: 'PagePermission',
   // components: { SwitchRoles },
@@ -67,20 +70,20 @@ export default {
           businessName: 'BUSI',
           processName: '业务1',
           processDescribe: 'desc',
-          updateTime: '2019.07.16',
+          updateTime: '2019.07.16'
         },
         {
           processId: '2',
           businessName: 'BUSI2',
           processName: '业务2',
           processDescribe: 'desc',
-          updateTime: '2019.07.18',
+          updateTime: '2019.07.18'
         }
       ],
       // 分页
       currentPage: 1,
       total: 0,
-      pageSize: 3
+      pageSize: 5
     }
   },
   created() {
