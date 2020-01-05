@@ -108,34 +108,27 @@ export default {
   methods: {
     // 请求获取查询订单列表
     reqOrderList() {
-      const pageSize = this.pageSize
-      const pageNumber = this.currentPage
-      const dataType = this.dataType
-      let startDate, endDate
-      // 获取查询的订单信息
-      if (!this.orderTime) {
-        startDate = ''
-        endDate = ''
-        // args = { startDate: '', endDate: '', dataType: this.dataType }
-      } else {
-        startDate = this.orderTime[0] || ''
-        endDate = this.orderTime[1] || ''
-        // args = { startDate: this.orderTime[0] || '', endDate: this.orderTime[1] || '', dataType: this.dataType,  }
-      }
-      const args = { pageSize, pageNumber, dataType, startDate, endDate }
       this.lendTableLoading = true
-      getOrderList(args).then(({ data }) => {
+      getOrderList(this.getOrderSearchOption()).then(({ data }) => {
         console.log('lemdData', data)
-        this.lendData = data.content.rows
-        this.total = data.content.records
-        this.lendTableLoading = false
-        this.$refs.lendTable.toggleAllSelection(false)
+        if (data.status === 'success') {
+          this.lendData = data.content.rows
+          this.total = data.content.records
+          this.$refs.lendTable.toggleAllSelection(false)
+          return
+        }
+        this.$message.error(`${data.message}`)
       })
+        .catch((err) => {
+          console.log(err.response)
+        })
+        .finally(this.lendTableLoading = false)
     },
     handleSearch() {
       this.dataType = this.input_dataType
-      if (!this.input_orderTime || this.input_orderTime.length === 0) {
-        this.orderTime = []
+      if (!this.input_orderTime || this.input_orderTime.length !== 0) {
+        this.orderTime = this.input_orderTiem
+        console.log('传输的值', this.orderTime[0], this.orderTime[1])
       }
       this.currentPage = 1
       this.reqOrderList()
@@ -154,7 +147,7 @@ export default {
         getRuleProcess({ processId: processId }).then(({ data }) => {
           this.ruleData = []
           this.ruleData.push(data.content)
-          console.log(data)
+          console.log('processId', data)
         })
       }
       // 获取数据类型
@@ -194,25 +187,6 @@ export default {
       this.currentPage = currentPage
       this.reqOrderList()
     },
-    // handleValidateDate() {
-    //   console.log(this.orderTime)
-    //   if (!this.orderTime) {
-    //     return
-    //   }
-    //   const [start, end] = this.orderTime.map(time => new Date(time))
-    //   const _7_DAY = 7 * 24 * 60 * 60 * 1000
-    //   const now = new Date()
-    //   console.log(now)
-    //   console.log(now - end)
-    //   if (now - end > _7_DAY) {
-    //     // this.orderTime[1] = now - _7_DAY
-    //     this.$message('最多显示7天数据')
-    //   }
-    //   if (now - start > _7_DAY) {
-    //     // this.orderTime[0] = now - _7_DAY
-    //     this.$message('最多显示7天数据')
-    //   }
-    // },
     handleSelectionChange(selection) {
       selection.forEach(row => {
         if (this.orderCodeSet.has(row.orderCode)) {
@@ -228,6 +202,19 @@ export default {
       this.lendData = []
       this.dataType = ''
       this.orderTime = []
+    },
+    getOrderSearchOption() {
+      const option = {}
+      if (this.orderTime[0]) {
+        option['startDate'] = this.orderTime[0]
+        option['endDate'] = this.orderTime[1]
+        this.orderTime = []
+      }
+      option['pageSize'] = this.pageSize
+      option['pageNumber'] = this.currentPage
+      option['dataType'] = this.dataType
+      console.log('this.OrderSearch', option)
+      return option
     }
   }
 }
