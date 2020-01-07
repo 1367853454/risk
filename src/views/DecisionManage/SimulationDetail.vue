@@ -110,11 +110,10 @@ export default {
     reqOrderList() {
       this.lendTableLoading = true
       getOrderList(this.getOrderSearchOption()).then(({ data }) => {
-        console.log('lemdData', data)
         if (data.status === 'success') {
           this.lendData = data.content.rows
           this.total = data.content.records
-          this.$refs.lendTable.toggleAllSelection(false)
+          this.$refs.lendTable.toggleAllSelection()
           return
         }
         this.$message.error(`${data.message}`)
@@ -128,7 +127,6 @@ export default {
       this.dataType = this.input_dataType
       if (!this.input_orderTime || this.input_orderTime.length !== 0) {
         this.orderTime = this.input_orderTiem
-        console.log('传输的值', this.orderTime[0], this.orderTime[1])
       }
       this.currentPage = 1
       this.reqOrderList()
@@ -190,18 +188,19 @@ export default {
     handleSelectionChange(selection) {
       selection.forEach(row => {
         if (this.orderCodeSet.has(row.orderCode)) {
-          this.orderCodeSet.remove(row.orderCode)
+          this.orderCodeSet.delete(row.orderCode)
         } else {
           this.orderCodeSet.add(row.orderCode)
         }
       })
-      console.log(this.orderCodeSet)
+      console.log('orderCodeSet', this.orderCodeSet)
     },
     clearData() {
       this.ruleData = []
       this.lendData = []
       this.dataType = ''
       this.orderTime = []
+      this.orderCodeList = new Set()
     },
     getOrderSearchOption() {
       const option = {}
