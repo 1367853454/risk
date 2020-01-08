@@ -38,9 +38,8 @@
         <div class="button"><el-button icon="el-icon-search" type="primary" size="small" @click="handleSearch">查询</el-button></div>
       </el-col>
     </el-row>
-    <!-- <el-table v-loading="lendTableLoading" :data="lendData" style="width:100%;" @select="selectTable" @select-all="selectTable"> -->
-    <el-table v-loading="lendTableLoading" ref="lendTable" :data="lendData" style="width:100%;" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="50" />
+    <el-table v-loading="lendTableLoading" ref="lendTable" :data="lendData" style="width:100%;" @selection-change="handleSelectionChange" :row-key="getRowKeys">
+      <el-table-column type="selection" :reserve-selection="true" width="50" />
       <el-table-column label="借款编号" align="center" prop="orderCode" />
       <el-table-column label="对应产品" align="center" prop="businessName" />
       <el-table-column label="客户姓名" align="center" prop="fullName" />
@@ -113,7 +112,7 @@ export default {
         if (data.status === 'success') {
           this.lendData = data.content.rows
           this.total = data.content.records
-          this.$refs.lendTable.toggleAllSelection()
+          // this.$refs.lendTable.toggleAllSelection()
           return
         }
         this.$message.error(`${data.message}`)
@@ -145,7 +144,6 @@ export default {
         getRuleProcess({ processId: processId }).then(({ data }) => {
           this.ruleData = []
           this.ruleData.push(data.content)
-          console.log('processId', data)
         })
       }
       // 获取数据类型
@@ -166,14 +164,6 @@ export default {
       sessionStorage.setItem('orderCodeList', JSON.stringify(this.orderCodeList))
       this.$router.push({ path: 'simulationresult' })
       this.clearData()
-      this.orderCodeList = []
-    },
-    selectTable(selection) {
-      // this.orderCodeList = []
-      selection.forEach(item => {
-        this.orderCodeList.push(item.orderCode.toString())
-      })
-      console.log(this.orderCodeList)
     },
     // 分页
     handleSizeChange(pageSize) {
@@ -186,21 +176,23 @@ export default {
       this.reqOrderList()
     },
     handleSelectionChange(selection) {
+      this.orderCodeSet = new Set()
       selection.forEach(row => {
-        if (this.orderCodeSet.has(row.orderCode)) {
-          this.orderCodeSet.delete(row.orderCode)
-        } else {
-          this.orderCodeSet.add(row.orderCode)
-        }
+        this.orderCodeSet.add(row.orderCode)
       })
-      console.log('orderCodeSet', this.orderCodeSet)
+      this.orderCodeList = this.orderCodeSet
+      console.log('orderCodeSet', this.orderCodeList)
+    },
+    getRowKeys(row) {
+      return row.orderCode
     },
     clearData() {
       this.ruleData = []
       this.lendData = []
       this.dataType = ''
       this.orderTime = []
-      this.orderCodeList = new Set()
+      this.orderCodeList = []
+      this.orderCodeSet = new Set()
     },
     getOrderSearchOption() {
       const option = {}
@@ -212,7 +204,6 @@ export default {
       option['pageSize'] = this.pageSize
       option['pageNumber'] = this.currentPage
       option['dataType'] = this.dataType
-      console.log('this.OrderSearch', option)
       return option
     }
   }
