@@ -9,7 +9,7 @@
       <el-table-column label="描述" prop="processDescribe" />
       <el-table-column label="修改时间" prop="updateTime" />
     </el-table>
-    <el-card style="margin-top: 50px;margin-bottom: 30px;" v-loading="isLoading"> 
+    <el-card style="margin-top: 50px;margin-bottom: 30px;" v-loading="isLoading">
       <el-row :span="24" type="flex" align="middle" style="padding: 20px 0">
       <el-col :span="12">
         <div id="graph" style="width: 80%;height:400px;margin-left:10%;"></div>
@@ -42,7 +42,9 @@
 <script>
 import echarts from 'echarts'
 import api from '../../api/decision'
-const { postRuleSimulation } = api
+const {
+  postRuleSimulation
+} = api
 export default {
   name: 'SimulationResult',
   data() {
@@ -71,11 +73,10 @@ export default {
     var colors = ['#5793f3', '#d14a61', '#675bba']
     const option = {
       color: colors,
-
       tooltip: {
         trigger: 'none',
         axisPointer: {
-            type: 'cross'
+          type: 'cross'
         }
       },
       legend: {
@@ -95,17 +96,16 @@ export default {
           axisLine: {
             onZero: false,
             lineStyle: {
-                color: colors[1]
+              color: colors[1]
             }
           },
           axisPointer: {
-              // label: {
-              //     formatter: function (params) {
-              //         return '降水量  ' + params.value
-              //             + (params.seriesData.length ? '：' + params.seriesData[0].data : '');
-              //     }
-              // }
-          },
+            label: {
+              formatter: function(params) {
+                return '降水量  ' + params.value(params.seriesData.length ? '：' + params.seriesData[0].data : '')
+              }
+            }
+          }
           // data: ["2016-1", "2016-2", "2016-3", "2016-4", "2016-5", "2016-6", "2016-7", "2016-8", "2016-9", "2016-10", "2016-11", "2016-12"]
         },
         {
@@ -116,9 +116,9 @@ export default {
           axisLine: {
             onZero: false,
             lineStyle: {
-                color: colors[0]
+              color: colors[0]
             }
-          },
+          }
           // axisPointer: {
           //   label: {
           //     formatter: function (params) {
@@ -137,15 +137,15 @@ export default {
       ],
       series: [
         {
-          name:'2015 降水量',
-          type:'line',
+          name: '2015 降水量',
+          type: 'line',
           xAxisIndex: 1,
-          smooth: true,
+          smooth: true
           // data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
         },
         {
-          name:'2016 降水量',
-          type:'line',
+          name: '2016 降水量',
+          type: 'line',
           smooth: true,
           data: [3.9, 5.9, 11.1, 18.7, 48.3, 69.2, 231.6, 46.6, 55.4, 18.4, 10.3, 0.7]
         }
@@ -167,32 +167,40 @@ export default {
       this.ruleData = JSON.parse(sessionStorage.getItem('ruleData'))
       const orderCodeList = JSON.parse(sessionStorage.getItem('orderCodeList'))
       const businessCode = JSON.parse(sessionStorage.getItem('businessCode'))
-      // const processCode = JSON.parse(sessionStorage.getItem('processCode'))
-      const processCode = 'fushen'
-      // const triggerLinkEnums = JSON.parse(sessionStorage.getItem('triggerLinkEnums'))
-      const triggerLinkEnums = 'review'
-      const args = { businessCode, processCode, triggerLinkEnums, orderCodeList }
-      postRuleSimulation(args).then(({ data }) => {
-        if (data.status === 'success') {
-          // console.log(data.content.testUserNumber)
-          this.testUserNumber = data.content.testUserNumber
-          this.failNumber = data.content.failNumber
-          this.successNumber = data.content.successNumber
-          this.successRate = data.content.successRate
-          this.maxCreditAmount = data.content.maxCreditAmount
-          this.averageCreditAmount = data.content.averageCreditAmount
-          this.lendData = data.content.ruleSimulationListVOList
-        } else if (data.code === 'drools execute fail') {
-          this.$message.error('规则引擎执行失败')
-        }
-      })
-      .catch(err => {
-        console.log(err)
-        this.$$message.error('请求发送失败')
-      })
-      .finally(() => {
-        this.isLoading = false
-      })
+      const processCode = JSON.parse(sessionStorage.getItem('processCode'))
+      const triggerLinkEnums = JSON.parse(sessionStorage.getItem('triggerLinkEnums'))
+      postRuleSimulation(this.getOrderSearchOption(businessCode, processCode, triggerLinkEnums, orderCodeList))
+        .then(({ data }) => {
+          if (data.status === 'success') {
+            console.log('被测试数', data.content.testUserNumber)
+            this.testUserNumber = data.content.testUserNumber
+            this.failNumber = data.content.failNumber
+            this.successNumber = data.content.successNumber
+            this.successRate = data.content.successRate
+            this.maxCreditAmount = data.content.maxCreditAmount
+            this.averageCreditAmount = data.content.averageCreditAmount
+            this.lendData = data.content.ruleSimulationListVOList
+          } else if (data.code === 'drools execute fail') {
+            this.$message.error('规则引擎执行失败')
+          }
+        }).catch(err => {
+          console.log(err)
+          this.$$message.error('请求发送失败')
+        }).finally(() => {
+          this.isLoading = false
+        })
+    },
+    getOrderSearchOption(businessCode, processCode, triggerLinkEnums, orderCodeList) {
+      const option = {}
+      option['businessCode'] = businessCode
+      option['processCode'] = processCode
+      option['triggerLinkEnums'] = triggerLinkEnums
+      option['orderCodeList'] = orderCodeList
+      console.log('orderCodeList', businessCode)
+      console.log('orderCodeList', processCode)
+      console.log('orderCodeList', triggerLinkEnums)
+      console.log('orderCodeList', orderCodeList)
+      return option
     }
   }
 }

@@ -92,8 +92,7 @@ export default {
       currentPage: 1,
       total: 0,
       pageSize: 10,
-      orderCodeList: [],
-      orderCodeSet: new Set()
+      orderCodeList: []
     }
   },
   watch: {
@@ -116,11 +115,9 @@ export default {
           return
         }
         this.$message.error(`${data.message}`)
-      })
-        .catch((err) => {
-          console.log(err.response)
-        })
-        .finally(this.lendTableLoading = false)
+      }).catch((err) => {
+        console.log(err.response)
+      }).finally(this.lendTableLoading = false)
     },
     handleSearch() {
       this.dataType = this.input_dataType
@@ -176,12 +173,11 @@ export default {
       this.reqOrderList()
     },
     handleSelectionChange(selection) {
-      this.orderCodeSet = new Set()
+      this.orderCodeList = []
       selection.forEach(row => {
-        this.orderCodeSet.add(row.orderCode)
+        this.orderCodeList.push(row.orderCode)
       })
-      this.orderCodeList = this.orderCodeSet
-      console.log('orderCodeSet', this.orderCodeList)
+      console.log('orderCodeList', this.orderCodeList)
     },
     getRowKeys(row) {
       return row.orderCode
@@ -192,7 +188,6 @@ export default {
       this.dataType = ''
       this.orderTime = []
       this.orderCodeList = []
-      this.orderCodeSet = new Set()
     },
     getOrderSearchOption() {
       const option = {}
