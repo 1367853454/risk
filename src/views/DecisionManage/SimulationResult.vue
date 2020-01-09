@@ -57,7 +57,11 @@ export default {
       maxCreditAmount: '0',
       averageCreditAmount: '0',
       lendData: [],
-      isLoading: false
+      isLoading: false,
+      xData: [],
+      passData: [],
+      rejectData: [],
+      reviewData: []
     }
   },
   watch: {
@@ -80,8 +84,7 @@ export default {
         }
       },
       legend: {
-        // data:['2015 降水量', '2016 降水量']
-        data: ['0', '1']
+        data: ['拒绝', '通过', '复议']
       },
       grid: {
         top: 70,
@@ -105,8 +108,8 @@ export default {
                 return '降水量  ' + params.value(params.seriesData.length ? '：' + params.seriesData[0].data : '')
               }
             }
-          }
-          // data: ["2016-1", "2016-2", "2016-3", "2016-4", "2016-5", "2016-6", "2016-7", "2016-8", "2016-9", "2016-10", "2016-11", "2016-12"]
+          },
+          data: ['2016-1', '2016-2', '2016-3', '2016-4']
         },
         {
           type: 'category',
@@ -117,17 +120,11 @@ export default {
             onZero: false,
             lineStyle: {
               color: colors[0]
+            },
+            splitLine: {
+              show: false
             }
           }
-          // axisPointer: {
-          //   label: {
-          //     formatter: function (params) {
-          //         return '降水量  ' + params.value
-          //             + (params.seriesData.length ? '：' + params.seriesData[0].data : '');
-          //     }
-          //   }
-          // },
-          // data: ["2015-1", "2015-2", "2015-3", "2015-4", "2015-5", "2015-6", "2015-7", "2015-8", "2015-9", "2015-10", "2015-11", "2015-12"]
         }
       ],
       yAxis: [
@@ -137,17 +134,24 @@ export default {
       ],
       series: [
         {
-          name: '2015 降水量',
+          name: '拒绝',
           type: 'line',
           xAxisIndex: 1,
-          smooth: true
-          // data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+          smooth: true,
+          data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
         },
         {
-          name: '2016 降水量',
+          name: '通过',
           type: 'line',
           smooth: true,
           data: [3.9, 5.9, 11.1, 18.7, 48.3, 69.2, 231.6, 46.6, 55.4, 18.4, 10.3, 0.7]
+        },
+        {
+          name: '复议',
+          type: 'line',
+          xAxisIndex: 1,
+          smooth: true,
+          data: [1.6, 4.9, 8.0, 23.4, 23.7, 60.7, 75.6, 12.2, 28.7, 13.8, 6.0, 12.3]
         }
       ]
     }
@@ -155,6 +159,10 @@ export default {
   },
   methods: {
     getInitData() {
+      this.xData = []
+      this.passData = []
+      this.reviewData = []
+      this.rejectData = []
       this.isLoading = true
       this.ruleData = []
       this.testUserNumber = 0
@@ -172,7 +180,6 @@ export default {
       postRuleSimulation(this.getOrderSearchOption(businessCode, processCode, triggerLinkEnums, orderCodeList))
         .then(({ data }) => {
           if (data.status === 'success') {
-            console.log('被测试数', data.content.testUserNumber)
             this.testUserNumber = data.content.testUserNumber
             this.failNumber = data.content.failNumber
             this.successNumber = data.content.successNumber
@@ -180,6 +187,20 @@ export default {
             this.maxCreditAmount = data.content.maxCreditAmount
             this.averageCreditAmount = data.content.averageCreditAmount
             this.lendData = data.content.ruleSimulationListVOList
+            this.xData = data.content.xData
+            const size = this.lendData.length
+            // 我不知道我需要什么了
+            for (let i = 0; i < size; i++) {
+              if (this.lendData[i].simulationResult === 'REJECT') {
+                this.rejectData.push(this.lendData[i].applicationAmount)
+              }
+              if (this.lendData[i].simulationResult === 'PASS') {
+                this.passData.push(this.lendData[i].applicationAmount)
+              }
+              if (this.lendData[i].simulationResult === 'REVIEW') {
+                this.reviewData.push(this.lendData[i].applicationAmount)
+              }
+            }
           } else if (data.code === 'drools execute fail') {
             this.$message.error('规则引擎执行失败')
           }
