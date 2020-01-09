@@ -99,6 +99,9 @@ export default {
       getStatistics(this.getSearchOption()).then(({ data }) => {
         this.ruleDetail = data.content
       })
+      this.packageValue = ''
+      this.processValue = ''
+      this.countTime = []
     },
     getSearchOption() {
       const option = {}
